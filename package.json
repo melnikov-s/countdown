@@ -1,0 +1,50 @@
+{
+	"name": "countdown",
+	"version": "0.1.0",
+	"description": "simple countdown timer",
+	"main": "lib/countdown.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:cover": "jest --coverage",
+		"start": "rollup --watch -c rollup.config.js",
+		"lint": "eslint ./src ./tests --ext .ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/melnikov-s/countdown.git"
+	},
+	"author": "Sergey Melnikov",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/melnikov-s/countdown/issues"
+	},
+	"homepage": "https://github.com/melnikov-s/countdown#readme",
+	"devDependencies": {
+		"@babel/core": "^7.9.0",
+		"@babel/preset-env": "^7.9.0",
+		"@rollup/plugin-node-resolve": "^7.1.1",
+		"@types/jest": "^25.1.4",
+		"@types/react": "^16.9.26",
+		"@typescript-eslint/eslint-plugin": "^2.25.0",
+		"@typescript-eslint/parser": "^2.25.0",
+		"eslint": "^6.8.0",
+		"eslint-config-airbnb": "^18.1.0",
+		"eslint-config-prettier": "^6.10.1",
+		"eslint-plugin-import": "^2.20.1",
+		"eslint-plugin-prettier": "^3.1.2",
+		"jest": "^25.2.3",
+		"prettier": "^2.0.2",
+		"rollup": "^2.2.0",
+		"rollup-plugin-sass": "^1.2.2",
+		"rollup-plugin-serve": "^1.0.1",
+		"rollup-plugin-typescript2": "^0.26.0",
+		"ts-jest": "^25.2.1",
+		"tslib": "^1.11.1",
+		"typescript": "^3.8.3"
+	},
+	"dependencies": {
+		"preact": "^10.3.4"
+	}
+}
