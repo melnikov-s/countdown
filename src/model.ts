@@ -14,11 +14,17 @@ export default class CountDownModel {
 	duration: number = 0;
 	laps: number[] = [];
 	pausedAt: number = 0;
-	onStateChange: (state: TimerState) => void;
+	finishedAt: number = 0;
 	timerState: TimerState = TimerStates.initial;
+	onStateChange: (state: TimerState) => void;
+	onLapChange: () => void;
 
-	constructor(onStateChange: (state: TimerState) => void) {
+	constructor(
+		onStateChange: (state: TimerState) => void,
+		onLapChange: () => void
+	) {
 		this.onStateChange = onStateChange;
+		this.onLapChange = onLapChange;
 	}
 
 	private transitionState(
@@ -33,10 +39,26 @@ export default class CountDownModel {
 		}
 	}
 
+	get compareTime(): number {
+		switch (this.timerState) {
+			case TimerStates.running:
+				return Date.now();
+			case TimerStates.paused:
+				return this.pausedAt;
+			case TimerStates.finished:
+				return this.finishedAt;
+			default:
+				return 0;
+		}
+	}
+
 	get progress(): number {
-		if (this.timerState === TimerStates.running) {
+		if (
+			this.timerState === TimerStates.running ||
+			this.timerState === TimerStates.paused
+		) {
 			return Math.min(
-				((Date.now() - this.startTime) / this.duration) * 100,
+				((this.compareTime - this.startTime) / this.duration) * 100,
 				100
 			);
 		}
@@ -45,14 +67,7 @@ export default class CountDownModel {
 	}
 
 	get secondsRemaining(): number {
-		switch (this.timerState) {
-			case TimerStates.running:
-				return this.startTime + this.duration - Date.now();
-			case TimerStates.paused:
-				return this.startTime + this.duration - this.pausedAt;
-			default:
-				return 0;
-		}
+		return this.startTime + this.duration - this.compareTime;
 	}
 
 	get lapExceedsThreshold(): boolean {
@@ -66,7 +81,7 @@ export default class CountDownModel {
 			let duration;
 
 			if (index === this.laps.length - 1) {
-				duration = Date.now() - value;
+				duration = this.compareTime - value;
 			} else {
 				duration = this.laps[index + 1] - value;
 			}
@@ -91,6 +106,7 @@ export default class CountDownModel {
 	}
 
 	stop(): void {
+		this.finishedAt = Date.now();
 		this.transitionState(TimerStates.finished, [
 			TimerStates.running,
 			TimerStates.paused,
@@ -110,9 +126,31 @@ export default class CountDownModel {
 
 	addLap(): void {
 		this.laps.push(Date.now());
+		this.onLapChange();
 	}
 
 	removeLap(): void {
 		this.laps.pop();
+		this.onLapChange();
+	}
+
+	fromJSON(json: Partial<this>): void {
+		(Object.keys(json) as (keyof this)[]).forEach((key) => {
+			this[key] = json[key]!;
+		});
+
+		this.transitionState(this.timerState);
+	}
+
+	toJSON(): Partial<this> {
+		return (Object.getOwnPropertyNames(this) as (keyof this)[]).reduce(
+			(json, prop) => {
+				if (typeof this[prop] !== "function") {
+					json[prop] = this[prop];
+				}
+				return json;
+			},
+			{} as Partial<this>
+		);
 	}
 }
