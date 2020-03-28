@@ -17,14 +17,9 @@ export default class CountDownModel {
 	finishedAt: number = 0;
 	timerState: TimerState = TimerStates.initial;
 	onStateChange: (state: TimerState) => void;
-	onLapChange: () => void;
 
-	constructor(
-		onStateChange: (state: TimerState) => void,
-		onLapChange: () => void
-	) {
+	constructor(onStateChange: (state: TimerState) => void) {
 		this.onStateChange = onStateChange;
-		this.onLapChange = onLapChange;
 	}
 
 	private transitionState(
@@ -97,12 +92,13 @@ export default class CountDownModel {
 		this.duration = duration;
 		this.startTime = Date.now();
 		this.lapThreshold = lapThreshold;
-		this.laps = [];
 
-		this.transitionState(TimerStates.running, [
-			TimerStates.initial,
-			TimerStates.finished,
-		]);
+		this.transitionState(TimerStates.running, [TimerStates.initial]);
+	}
+
+	restart(): void {
+		this.laps = [];
+		this.transitionState(TimerStates.initial, [TimerStates.finished]);
 	}
 
 	stop(): void {
@@ -126,12 +122,18 @@ export default class CountDownModel {
 
 	addLap(): void {
 		this.laps.push(Date.now());
-		this.onLapChange();
+		this.transitionState(TimerStates.running, [
+			TimerStates.running,
+			TimerStates.paused,
+		]);
 	}
 
 	removeLap(): void {
 		this.laps.pop();
-		this.onLapChange();
+		this.transitionState(TimerStates.running, [
+			TimerStates.running,
+			TimerStates.paused,
+		]);
 	}
 
 	fromJSON(json: Partial<this>): void {

@@ -1,0 +1,30 @@
+.cd-timer-input-section {
+	padding-bottom: 16px;
+	border: 0;
+
+	.cd-timer-input-wrapper {
+		display: flex;
+		width: 130px;
+		flex-direction: column;
+	}
+
+	.cd-timer-input-labels {
+		display: flex;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.cd-timer-input-main-label {
+		display: block;
+		margin-bottom: 4px;
+		font-weight: bold;
+	}
+
+	.cd-timer-input {
+		display: flex;
+		justify-content: space-between;
+		input {
+			width: 50px;
+		}
+	}
+}

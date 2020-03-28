@@ -1,8 +1,14 @@
-import { h } from "preact";
+import { h, Fragment } from "preact";
 import { useState } from "preact/hooks";
 
 import "./App.scss";
 import CountDownModel, { TimerStates } from "../model";
+import ProgressRing from "./ProgressRing";
+import TimerInput from "./TimerInput";
+import TimerDisplay from "./TimerDisplay";
+import Laps from "./Laps";
+import Report from "./Report";
+import TimerButton from "./TimerButton";
 
 export default function App({
 	model,
@@ -12,60 +18,87 @@ export default function App({
 	const [duration, setDuration] = useState(0);
 	const [threshold, setThreshold] = useState(0);
 
-	return (
-		<div class="countdown">
-			<div>{model.progress}</div>
-			<div>{model.secondsRemaining}</div>
-			<div>{JSON.stringify(model.lapStats)}</div>
-			{(model.timerState === TimerStates.initial ||
-				model.timerState === TimerStates.finished) && [
-				<input
-					type="text"
-					value={duration}
-					onChange={(e): void =>
-						setDuration(parseInt((e.target as HTMLInputElement).value))
-					}
-				/>,
-				<input
-					type="text"
-					value={threshold}
-					onChange={(e): void =>
-						setThreshold(parseInt((e.target as HTMLInputElement).value))
-					}
-				/>,
-				<input
-					type="button"
-					value="start"
-					onClick={(): void => model.start(duration, threshold)}
-				/>,
-			]}
-			{model.timerState === TimerStates.running && [
-				<input type="button" value="stop" onClick={(): void => model.stop()} />,
-				<input
-					type="button"
-					value="pause"
-					onClick={(): void => model.pause()}
-				/>,
-				<input
-					type="button"
-					value="lap"
-					onClick={(): void => model.addLap()}
-				/>,
-				model.laps.length > 0 && (
-					<input
-						type="button"
-						value="undo"
-						onClick={(): void => model.removeLap()}
+	let contentElement;
+
+	if (model.timerState === TimerStates.initial) {
+		contentElement = (
+			<Fragment>
+				<div class="cd-timer-section">
+					<div class="cd-timer-initial">
+						<TimerInput
+							id="timer"
+							label="timer"
+							value={duration}
+							onValueChange={setDuration}
+						/>
+						<TimerInput
+							id="lap_threshold"
+							label="lap threshold"
+							value={threshold}
+							onValueChange={setThreshold}
+						/>
+					</div>
+					<ProgressRing stroke={4} radius={120} progress={100} />
+				</div>
+				<div class="cd-controls-section">
+					<TimerButton
+						label="start"
+						disabled={duration === 0}
+						onClick={(): void => model.start(duration, threshold)}
 					/>
-				),
-			]}
-			{model.timerState === TimerStates.paused && (
-				<input
-					type="button"
-					value="resume"
-					onClick={(): void => model.resume()}
+				</div>
+			</Fragment>
+		);
+	} else if (model.timerState === TimerStates.finished) {
+		contentElement = (
+			<Fragment>
+				<TimerButton label="restart" onClick={(): void => model.restart()} />
+				<Report
+					lapStats={model.lapStats}
+					remaining={model.secondsRemaining}
+					threshold={model.lapThreshold}
 				/>
-			)}
-		</div>
+			</Fragment>
+		);
+	} else {
+		contentElement = (
+			<Fragment>
+				<div class="cd-timer-section">
+					<div class="cd-timer">
+						<TimerDisplay value={model.secondsRemaining} />
+					</div>
+
+					<ProgressRing
+						stroke={4}
+						radius={120}
+						progress={100 - model.progress}
+					/>
+				</div>
+				<div class="cd-controls-section">
+					<TimerButton label="stop" onClick={(): void => model.stop()} />
+					{model.timerState === TimerStates.running ? (
+						<TimerButton label="pause" onClick={(): void => model.pause()} />
+					) : (
+						<TimerButton label="resume" onClick={(): void => model.resume()} />
+					)}
+					<TimerButton label="lap" onClick={(): void => model.addLap()} />
+					{model.laps.length > 0 && (
+						<TimerButton label="undo" onClick={(): void => model.removeLap()} />
+					)}
+				</div>
+				<div class="cd-lap-section">
+					<div class="cd-lap-section-inner">
+						<Laps lapStats={model.lapStats} threshold={model.lapThreshold} />
+					</div>
+				</div>
+			</Fragment>
+		);
+	}
+
+	return (
+		<main class="cd-app">
+			<h1>Countdown Timer</h1>
+			<div class="cd-app-section">{contentElement}</div>
+		</main>
 	);
 }

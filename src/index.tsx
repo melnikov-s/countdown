@@ -31,12 +31,8 @@ function onStateChange(state: TimerState): void {
 	}
 }
 
-function onLapChange(): void {
-	saveToStorage();
-}
-
 let rafTimer: number;
-const model = new CountDownModel(onStateChange, onLapChange);
+const model = new CountDownModel(onStateChange);
 
 let storage;
 

@@ -1,0 +1,15 @@
+@import "./variables.scss";
+
+.cd-loading-circle {
+	transform: rotate(-90deg);
+	transform-origin: 50% 50%;
+	stroke: $foreground-color;
+	fill: transparent;
+}
+
+.cd-backing-circle {
+	transform: rotate(-90deg);
+	transform-origin: 50% 50%;
+	stroke: $danger-color;
+	fill: transparent;
+}
