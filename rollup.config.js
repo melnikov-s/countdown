@@ -3,6 +3,7 @@ const serve = require("rollup-plugin-serve");
 const resolve = require("@rollup/plugin-node-resolve");
 const sass = require("rollup-plugin-sass");
 const commonjs = require("@rollup/plugin-commonjs");
+const uglify = require("rollup-plugin-uglify").uglify;
 const { name } = require("./package.json");
 
 module.exports = {
@@ -12,12 +13,11 @@ module.exports = {
 		typescript(),
 		sass({ output: "public/dist/countdown.css" }),
 		resolve(),
-		serve({ contentBase: "./public/", port: 3001 }),
+		uglify(),
 	],
 	output: {
 		file: `public/dist/${name}.js`,
-		format: "umd",
+		format: "iife",
 		name,
-		sourcemap: true,
 	},
 };
