@@ -34,6 +34,21 @@ function onStateChange(state: TimerState): void {
 let rafTimer: number;
 const model = new CountDownModel(onStateChange);
 
+document.addEventListener("keyup", (ev) => {
+	if (
+		model.timerState === TimerStates.running ||
+		model.timerState === TimerStates.paused
+	) {
+		//space
+		if (ev.which === 32) {
+			model.addLap();
+			//backspace or delete
+		} else if (ev.which === 8 || ev.which === 46) {
+			model.removeLap();
+		}
+	}
+});
+
 let storage;
 
 try {
