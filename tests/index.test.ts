@@ -1,5 +1,3 @@
-import helloWorld from "../src";
-
 test("Hello world!", () => {
-	expect(helloWorld).toBe("hello world");
+	throw new Error("Nothing to see here.");
 });

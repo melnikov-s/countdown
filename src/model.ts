@@ -6,7 +6,6 @@ export const TimerStates = {
 } as const;
 
 export type TimerState = typeof TimerStates[keyof typeof TimerStates];
-export type LapStat = { duration: number; exceedsThreshold: boolean };
 
 export default class CountDownModel {
 	lapThreshold: number = 0;
@@ -61,7 +60,7 @@ export default class CountDownModel {
 		return 0;
 	}
 
-	get secondsRemaining(): number {
+	get timeRemaining(): number {
 		return this.startTime + this.duration - this.compareTime;
 	}
 
@@ -69,23 +68,6 @@ export default class CountDownModel {
 		const current = this.laps[this.laps.length - 1];
 
 		return current != null && current + this.lapThreshold > Date.now();
-	}
-
-	get lapStats(): LapStat[] {
-		return this.laps.map((value, index) => {
-			let duration;
-
-			if (index === this.laps.length - 1) {
-				duration = this.compareTime - value;
-			} else {
-				duration = this.laps[index + 1] - value;
-			}
-
-			return {
-				duration,
-				exceedsThreshold: this.lapThreshold > 0 && duration > this.lapThreshold,
-			};
-		});
 	}
 
 	start(duration: number, lapThreshold: number = 0): void {

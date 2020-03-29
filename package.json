@@ -8,6 +8,7 @@
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:cover": "jest --coverage",
+		"watch": "rollup -c --watch rollup.config.js",
 		"start": "rollup -c rollup.config.js && node server.js",
 		"lint": "eslint ./src ./tests --ext .ts"
 	},

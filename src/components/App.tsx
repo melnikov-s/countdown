@@ -54,9 +54,10 @@ export default function App({
 			<Fragment>
 				<TimerButton label="restart" onClick={(): void => model.restart()} />
 				<Report
-					lapStats={model.lapStats}
-					remaining={model.secondsRemaining}
+					remaining={model.timeRemaining}
+					laps={model.laps}
 					threshold={model.lapThreshold}
+					compareTime={model.compareTime}
 				/>
 			</Fragment>
 		);
@@ -65,7 +66,7 @@ export default function App({
 			<Fragment>
 				<div class="cd-timer-section">
 					<div class="cd-timer">
-						<TimerDisplay value={model.secondsRemaining} />
+						<TimerDisplay value={model.timeRemaining} />
 					</div>
 
 					<ProgressRing
@@ -88,7 +89,11 @@ export default function App({
 				</div>
 				<div class="cd-lap-section">
 					<div class="cd-lap-section-inner">
-						<Laps lapStats={model.lapStats} threshold={model.lapThreshold} />
+						<Laps
+							laps={model.laps}
+							threshold={model.lapThreshold}
+							compareTime={model.compareTime}
+						/>
 					</div>
 				</div>
 			</Fragment>

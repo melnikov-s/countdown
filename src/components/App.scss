@@ -1,5 +1,14 @@
 @import "./variables.scss";
 
+html {
+	box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+
 body {
 	width: 100vw;
 	height: 100vh;
@@ -43,6 +52,7 @@ body {
 		position: relative;
 		height: 100%;
 		width: 100%;
+		min-height: 300px;
 		.cd-lap-section-inner {
 			position: absolute;
 			top: 0;
@@ -56,6 +66,7 @@ body {
 	.cd-controls-section {
 		margin-top: 16px;
 		display: flex;
+		flex-wrap: wrap;
 		width: 100%;
 		justify-content: center;
 	}

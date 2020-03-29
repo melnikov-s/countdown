@@ -1,17 +1,18 @@
 import { h } from "preact";
-import { LapStat } from "../model";
 import Laps from "./Laps";
-
-import "./Report.scss";
 import TimerDisplay from "./TimerDisplay";
 
+import "./Report.scss";
+
 export default function Report({
-	lapStats,
+	laps,
+	compareTime,
 	remaining,
 	threshold = 0,
 }: {
-	lapStats: LapStat[];
+	laps: number[];
 	remaining: number;
+	compareTime: number;
 	threshold?: number;
 }): h.JSX.Element {
 	return (
@@ -20,7 +21,7 @@ export default function Report({
 			<div class="cd-report-remaining">
 				<label>Time Remaining:</label> <TimerDisplay value={remaining} />
 			</div>
-			<Laps lapStats={lapStats} threshold={threshold} />
+			<Laps laps={laps} threshold={threshold} compareTime={compareTime} />
 		</div>
 	);
 }

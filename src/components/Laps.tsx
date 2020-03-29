@@ -1,34 +1,54 @@
 import { h, Fragment } from "preact";
 import { memo } from "preact/compat";
-import { LapStat } from "../model";
 import TimerDisplay from "./TimerDisplay";
 import classNames from "classnames";
 
 import "./Laps.scss";
 import { toTimerDigit } from "../utils";
 
-function Lap({ lap, index }: { lap: LapStat; index: number }): h.JSX.Element {
-	console.log(index);
+function Lap({
+	duration,
+	index,
+	threshold = 0,
+}: {
+	duration: number;
+	index: number;
+	threshold?: number;
+}): h.JSX.Element {
 	return (
 		<li
 			className={classNames("cd-lap", {
-				"exceeds-threshold": lap.exceedsThreshold,
+				"exceeds-threshold": threshold > 0 && duration > threshold,
 			})}
 		>
 			<label>[{toTimerDigit(index + 1)}]</label>
-			<TimerDisplay value={lap.duration} />
+			<TimerDisplay value={duration} />
 		</li>
 	);
 }
 
 // Only the active lap needs to be updated each frame, we can use `memo` for the rest
 const StaticLaps = memo(
-	function ({ lapStats, length }: { lapStats: LapStat[]; length: number }) {
+	function ({
+		laps,
+		length,
+		threshold,
+	}: {
+		laps: number[];
+		length: number;
+		threshold?: number;
+	}) {
 		return (
 			<Fragment>
-				{lapStats
+				{laps
 					.map((lap, i) =>
-						i < length - 1 ? <Lap lap={lap} index={i} /> : null
+						i < length - 1 ? (
+							<Lap
+								duration={laps[i + 1] - lap}
+								index={i}
+								threshold={threshold}
+							/>
+						) : null
 					)
 					.reverse()}
 			</Fragment>
@@ -40,11 +60,13 @@ const StaticLaps = memo(
 );
 
 export default function Laps({
-	lapStats,
+	laps,
 	threshold,
+	compareTime,
 }: {
-	lapStats: LapStat[];
+	laps: number[];
 	threshold?: number;
+	compareTime: number;
 }): h.JSX.Element {
 	const thresholdElement = threshold ? (
 		<div className="cd-laps-threshold">
@@ -52,15 +74,19 @@ export default function Laps({
 		</div>
 	) : null;
 
-	const lastIndex = lapStats.length - 1;
+	const lastIndex = laps.length - 1;
 
 	return (
 		<Fragment>
 			{thresholdElement}
-			{lapStats.length > 0 && (
+			{laps.length > 0 && (
 				<ul className="cd-laps">
-					<Lap lap={lapStats[lastIndex]} index={lastIndex} />
-					<StaticLaps lapStats={lapStats} length={lapStats.length} />
+					<Lap
+						duration={compareTime - laps[lastIndex]}
+						index={lastIndex}
+						threshold={threshold}
+					/>
+					<StaticLaps laps={laps} length={laps.length} threshold={threshold} />
 				</ul>
 			)}
 		</Fragment>
